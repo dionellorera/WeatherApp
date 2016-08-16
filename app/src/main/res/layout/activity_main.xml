@@ -22,11 +22,4 @@
         tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-    <TextView
-        android:id="@+id/forecastTextView"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello World!"
-        android:visibility="gone"/>
 </RelativeLayout>

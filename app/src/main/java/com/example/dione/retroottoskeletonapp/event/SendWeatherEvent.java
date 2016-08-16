@@ -13,4 +13,5 @@ public class SendWeatherEvent {
     public Weather getWeather() {
         return mWeather;
     }
+
 }

@@ -29,12 +29,14 @@ public class ForecastManager {
     }
 
     @Subscribe
-    public void onGetWeatherEvent(GetWeatherEvent getWeatherEvent) {
+    public void onGetWeatherEvent(final GetWeatherEvent getWeatherEvent) {
         String latitude = Double.toString(getWeatherEvent.getLatitude()).trim();
         String longitude = Double.toString(getWeatherEvent.getLongitude()).trim();
         Callback<Weather> callback = new Callback<Weather>() {
             @Override
             public void success(Weather weather, retrofit.client.Response response) {
+                weather.setLatitude(getWeatherEvent.getLatitude());
+                weather.setLongitude(getWeatherEvent.getLongitude());
                 mBus.post(new SendWeatherEvent(weather));
             }
 

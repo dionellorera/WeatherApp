@@ -12,7 +12,7 @@ import retrofit.client.OkClient;
  * Created by dione on 11/08/2016.
  */
 public class ForecastClient {
-    private static final String BASE_URL = "https://api.forecast.io/forecast/";
+    private static final String BASE_URL = "https://api.darksky.net/forecast/";
     private static final String API_KEY = "e672a6f926d89cd9770047901f20847f";
     public static final String API_URL = BASE_URL + API_KEY;
 

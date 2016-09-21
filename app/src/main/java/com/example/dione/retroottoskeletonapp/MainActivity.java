@@ -1,6 +1,13 @@
 package com.example.dione.retroottoskeletonapp;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -40,11 +47,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initializeMap();
         initializeAutoCompleteFragment();
     }
-    private void initializeMap(){
+
+    private void initializeMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
-    private void initializeInterface(){
+
+    private void initializeInterface() {
         iApiResponse = new IApiResponse() {
             @Override
             public void onMarkerAdded(LatLng latLng) {
@@ -59,14 +68,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onApiResponse(SendWeatherEvent sendWeatherEvent, Double latitude, Double longitude) {
                 LatLng latLng = new LatLng(latitude, longitude);
-                Marker marker= mMap.addMarker(new MarkerOptions().position(latLng).title(sendWeatherEvent.getWeather().getCurrently().getSummary()));
+                Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(sendWeatherEvent.getWeather().getCurrently().getSummary()));
                 marker.showInfoWindow();
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 progressDialog.dismiss();
             }
         };
     }
-    private void initializeAutoCompleteFragment(){
+
+    private void initializeAutoCompleteFragment() {
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -76,12 +86,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public void onError(Status status) {
-                Toast.makeText(getApplicationContext() ,status.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), status.getStatusMessage(), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
             }
         });
     }
-    private void sendWeatherRequest(Double latitude, Double longitude){
+
+    private void sendWeatherRequest(Double latitude, Double longitude) {
         forecastApplication.mBus.post(new GetWeatherEvent(latitude, longitude));
         progressDialog.setCancelable(true);
         progressDialog.setMessage("Getting Weather Detail");
@@ -97,14 +108,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Subscribe
     public void onSendWeatherEventError(SendWeatherEventError sendWeatherEventError) {
-        Toast.makeText(getApplicationContext() ,sendWeatherEventError.getmRetroFitError().toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), sendWeatherEventError.getmRetroFitError().toString(), Toast.LENGTH_SHORT).show();
         progressDialog.dismiss();
     }
+
     @Override
     public void onResume() {
         super.onResume();
         forecastApplication.mBus.register(this);
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -115,6 +128,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMapClickListener(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
+
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    Location myLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                    if (myLocation == null) {
+                        Criteria criteria = new Criteria();
+                        criteria.setAccuracy(Criteria.ACCURACY_HIGH);
+                        String provider = lm.getBestProvider(criteria, true);
+                        myLocation = lm.getLastKnownLocation(provider);
+                    }
+
+                    if(myLocation!=null){
+                        LatLng userLocation = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 1500, null);
+                    }
+                }
+
+                return false;
+            }
+        });
+
+
     }
 
     @Override

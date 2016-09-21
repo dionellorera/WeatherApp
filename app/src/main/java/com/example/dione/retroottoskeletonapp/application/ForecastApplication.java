@@ -11,7 +11,7 @@ import com.squareup.otto.Bus;
  */
 public class ForecastApplication extends Application {
     private ForecastManager mForecastManager;
-    public Bus mBus = BusProvider.getInstance();
+    public final Bus mBus = BusProvider.getInstance();
     @Override
     public void onCreate() {
         super.onCreate();

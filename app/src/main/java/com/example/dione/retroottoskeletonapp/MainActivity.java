@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.widget.Toast;
 
 import com.example.dione.retroottoskeletonapp.api.interfaces.IApiResponse;
@@ -32,10 +31,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.otto.Subscribe;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
-    ForecastApplication forecastApplication;
-    GoogleMap mMap;
-    IApiResponse iApiResponse;
-    ProgressDialog progressDialog;
+    private ForecastApplication forecastApplication;
+    private GoogleMap mMap;
+    private IApiResponse iApiResponse;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

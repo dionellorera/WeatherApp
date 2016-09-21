@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 LatLng latLng = new LatLng(latitude, longitude);
                 Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(sendWeatherEvent.getWeather().getCurrently().getSummary()));
                 marker.showInfoWindow();
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14), 1500, null); 
                 progressDialog.dismiss();
             }
         };
